@@ -8,6 +8,21 @@ local function uuid()
     end)
 end
 
+local LrStringUtils = import 'LrStringUtils'
+
+local function split(str, delimiter)
+  local result = { }
+  local from  = 1
+  local delim_from, delim_to = string.find( str, delimiter, from  )
+  while delim_from do
+    table.insert( result, LrStringUtils.trimWhitespace( string.sub( str, from , delim_from-1 ) ) )
+    from  = delim_to + 1
+    delim_from, delim_to = string.find( str, delimiter, from  )
+  end
+  table.insert( result, LrStringUtils.trimWhitespace( string.sub( str, from  ) ) )
+  return result
+end
+
 local LrPathUtils = import 'LrPathUtils'
 
 
@@ -16,16 +31,16 @@ return {
     allowFileFormats = { 'JPEG' },
 
     exportPresetFields = {
-        { key = 'use_time', default = true},
-        { key = 'use_keywords', default = false},
-        { key = 'use_specific_tags', default = false},
-        { key = 'tags', default = ""},
-        { key = 'journal_type', default = 'icloud'},
-        { key = 'custom', default = false},
-        { key = 'icloud_path', default = LrPathUtils.standardizePath('~/Library/Mobile Documents/5U8NS4GX82~com~dayoneapp~dayone/Documents/Journal_dayone')},
-        { key = 'dropbox_path', default = LrPathUtils.standardizePath('~/Dropbox/Apps/Day One/Journal.dayone')},
-        { key = 'custom_path', default = ''},
-        { key = 'path', default = LrPathUtils.standardizePath('~/Library/Mobile Documents/5U8NS4GX82~com~dayoneapp~dayone/Documents/Journal_dayone')},
+        { key = 'use_time', default = true },
+        { key = 'use_keywords', default = false },
+        { key = 'use_specific_tags', default = false },
+        { key = 'tags', default = "" },
+        { key = 'journal_type', default = 'icloud' },
+        { key = 'custom', default = false },
+        { key = 'icloud_path', default = LrPathUtils.standardizePath('~/Library/Mobile Documents/5U8NS4GX82~com~dayoneapp~dayone/Documents/Journal_dayone') },
+        { key = 'dropbox_path', default = LrPathUtils.standardizePath('~/Dropbox/Apps/Day One/Journal.dayone') },
+        { key = 'custom_path', default = '' },
+        { key = 'path', default = LrPathUtils.standardizePath('~/Library/Mobile Documents/5U8NS4GX82~com~dayoneapp~dayone/Documents/Journal_dayone') },
     },
 
     sectionsForTopOfDialog = function ( viewFactory, propertyTable )
@@ -190,22 +205,12 @@ return {
                              and rendition.photo:getRawMetadata("dateTimeOriginal")
                              or LrDate.currentTime()
 
-                local old_keywords = exportParams.use_keywords
-                                     and rendition.photo:getFormattedMetadata("keywordTags")
-                                     or ''
-                local new_keywords = exportParams.use_specific_tags
-                                     and exportParams.tags
-                                     or ''
-                local keywords = old_keywords == ''
-                                 and new_keywords
-                                 or old_keywords .. ',' .. new_keywords
+                local old_keywords = split( rendition.photo:getFormattedMetadata("keywordTags"), ',' )
+                local new_keywords = split( exportParams.tags, ',' )
 
                 local uuid = uuid()
 
-                -- add support for keywords
-                -- check to make sure file does not exist
-                -- get location of journal
-
+                -- TODO: check to make sure file does not exist
 
                 local entries = LrPathUtils.child( exportParams.path, 'entries' )
                 local photos = LrPathUtils.child( exportParams.path, 'photos' )
@@ -227,11 +232,24 @@ return {
                 f:write('    <false/>\n')
 
                 if exportParams.use_keywords or exportParams.use_specific_tags then
-                    f:write('<key>Tags</key>\n')
+                    f:write('   <key>Tags</key>\n')
+                    f:write('   <array>\n')
+                end
 
-                    f:write('<array>\n')
-                    f:write('    <string>' .. keywords .. '</string>\n')
-                    f:write('</array>\n')
+                if exportParams.use_keywords then
+                    for key,value in pairs(old_keywords) do
+                        f:write('       <string>' .. value .. '</string>\n')
+                    end
+                end
+
+                if exportParams.use_specific_tags then
+                    for key,value in pairs(new_keywords) do
+                        f:write('       <string>' .. value .. '</string>\n')
+                    end
+                end
+
+                if exportParams.use_keywords or exportParams.use_specific_tags then
+                    f:write('   </array>\n')
                 end
 
                 f:write('    <key>UUID</key>\n')

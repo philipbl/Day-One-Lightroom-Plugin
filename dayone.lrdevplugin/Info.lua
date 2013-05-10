@@ -4,13 +4,13 @@ return {
     LrToolkitIdentifier = 'com.philiplundrigan.dayone_export',
 
     LrPluginName = LOC "$$$/DayOneExport/PluginName=Day One Exporter",
-    LrPluginInfoUrl = 'http://www.github.com/philipbl',
+    LrPluginInfoUrl = 'https://github.com/philipbl/Day-One-Lightroom-Plugin',
 
     LrExportServiceProvider = {
         title = "Day One",
         file = 'DayOneExporterServiceProvider.lua',
     },
 
-    VERSION = { major=1, minor=0, revision=0},
+    VERSION = { major=0, minor=9, revision=0},
 
 }
