@@ -8,6 +8,8 @@ local function uuid()
     end)
 end
 
+local LrPathUtils = import 'LrPathUtils'
+
 
 return {
     hideSections = { 'exportLocation', 'fileNaming' },
@@ -18,6 +20,12 @@ return {
         { key = 'use_keywords', default = false},
         { key = 'use_specific_tags', default = false},
         { key = 'tags', default = ""},
+        { key = 'journal_type', default = 'icloud'},
+        { key = 'custom', default = false},
+        { key = 'icloud_path', default = LrPathUtils.standardizePath('~/Library/Mobile Documents/5U8NS4GX82~com~dayoneapp~dayone/Documents/Journal_dayone')},
+        { key = 'dropbox_path', default = LrPathUtils.standardizePath('~/Dropbox/Apps/Day One/Journal.dayone')},
+        { key = 'custom_path', default = ''},
+        { key = 'path', default = LrPathUtils.standardizePath('~/Library/Mobile Documents/5U8NS4GX82~com~dayoneapp~dayone/Documents/Journal_dayone')},
     },
 
     sectionsForTopOfDialog = function ( viewFactory, propertyTable )
@@ -28,6 +36,89 @@ return {
         local share = LrView.share
 
         return {
+            {
+                title = "Journal Location",
+                -- synopsis = ""
+
+                viewFactory:row {
+                    spacing = viewFactory:control_spacing(),
+                    viewFactory:radio_button {
+                        title = 'iCloud',
+                        value = bind 'journal_type',
+                        checked_value = 'icloud',
+                        action = function ()
+                            propertyTable.custom = false
+                            propertyTable.journal_type = 'icloud'
+                            propertyTable.path = propertyTable.icloud_path
+                        end,
+                    },
+                },
+
+                viewFactory:row {
+                    spacing = viewFactory:control_spacing(),
+                    viewFactory:radio_button {
+                        title = 'Dropbox',
+                        value = bind 'journal_type',
+                        checked_value = 'dropbox',
+                        action = function ()
+                            propertyTable.custom = false
+                            propertyTable.journal_type = 'dropbox'
+                            propertyTable.path = propertyTable.dropbox_path
+                        end,
+                    },
+                },
+
+                viewFactory:row {
+                    spacing = viewFactory:control_spacing(),
+                    viewFactory:radio_button {
+                        title = 'Custom',
+                        value = bind 'journal_type',
+                        checked_value = 'custom',
+                        action = function ()
+                            propertyTable.custom = true
+                            propertyTable.journal_type = 'custom'
+                            propertyTable.path = propertyTable.custom_path
+                        end,
+                    },
+
+                    viewFactory:push_button {
+                        title = "Browse",
+                        enabled = bind 'custom',
+                        action = function ()
+                            --local LrLogger = import 'LrLogger'
+                            --local logger = LrLogger( 'myPlugin' )
+                            --logger:enable("logfile")
+
+                            --logger:warn(propertyTable.journal_type)
+
+                            local location = LrDialogs.runOpenPanel({
+                                title = "Day One Journal Location",
+                                canChooseDirectories = false,
+                                canChooseFiles = true,
+                                allowsMultipleSelection = false,
+                            })[1]
+
+                            propertyTable.custom_path = location
+                            propertyTable.path = propertyTable.custom_path
+                        end
+                    },
+
+                },
+
+                viewFactory:row {
+                    spacing = viewFactory:control_spacing(),
+                    viewFactory:static_text {
+                        title = 'Path: ',
+                    },
+
+                    viewFactory:static_text {
+                        title = bind { key = 'path', object = propertyTable },
+                        width = 500,
+                        truncation = 'head',
+                    },
+                },
+            },
+
             {
                 title = "Entry Settings",
 
@@ -64,8 +155,8 @@ return {
     end,
 
     processRenderedPhotos = function ( functionContext, exportContext )
-        local LrPathUtils = import 'LrPathUtils'
         local LrFileUtils = import 'LrFileUtils'
+        local LrPathUtils = import 'LrPathUtils'
         local LrDialogs = import 'LrDialogs'
         local LrTasks = import 'LrTasks'
         local LrDate = import 'LrDate'
@@ -116,14 +207,13 @@ return {
                 -- get location of journal
 
 
-                local entries = '/Users/philiplundrigan/Dropbox/Apps/Day One/Journal.dayone/entries'
-                local photos = '/Users/philiplundrigan/Dropbox/Apps/Day One/Journal.dayone/photos'
+                local entries = LrPathUtils.child( exportParams.path, 'entries' )
+                local photos = LrPathUtils.child( exportParams.path, 'photos' )
 
                 -- create photo
                 LrFileUtils.copy( pathOrMessage, LrPathUtils.child(LrPathUtils.standardizePath(photos), uuid .. '.jpg') )
 
                 -- create entry
-                local LrPathUtils = import "LrPathUtils"
                 local f = io.open(LrPathUtils.child(LrPathUtils.standardizePath(entries), uuid .. '.doentry'),"w")
                 f:write('<?xml version="1.0" encoding="UTF-8"?>\n')
                 f:write('<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">\n')
@@ -132,7 +222,7 @@ return {
                 f:write('    <key>Creation Date</key>\n')
                 f:write('    <date>' .. LrDate.timeToW3CDate(date) .. 'Z</date>\n')
                 f:write('    <key>Entry Text</key>\n')
-                f:write('    <string>this is a test</string>\n')
+                f:write('    <string></string>\n')
                 f:write('    <key>Starred</key>\n')
                 f:write('    <false/>\n')
 

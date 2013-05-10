@@ -11,8 +11,6 @@ return {
         file = 'DayOneExporterServiceProvider.lua',
     },
 
-    LrPluginInfoProvider = 'PluginInfoProvider.lua',
-
     VERSION = { major=1, minor=0, revision=0},
 
 }
