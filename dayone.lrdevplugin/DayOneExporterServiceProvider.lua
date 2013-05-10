@@ -1,35 +1,61 @@
-local LrView = import 'LrView'
 
 return {
     hideSections = { 'exportLocation', 'fileNaming' },
 
-    sectionsForTopOfDialog = function ( _, propertyTable )
-        local f = LrView.osFactory()
+    sectionsForTopOfDialog = function ( viewFactory, propertyTable )
+        local LrDialogs = import "LrDialogs"
+        local LrView = import "LrView"
+
         local bind = LrView.bind
         local share = LrView.share
 
-        local result = {
+        propertyTable.use_time = true
+        propertyTable.use_location = true
+        propertyTable.use_keywords = false
+        propertyTable.use_specific_tags = false
+        propertyTable.tags = ""
 
+        return {
             {
-                title = LOC "$$$/DayOneExport/ExportDialog/DayOneSettings=Day One CLI",
+                title = "Entry Settings",
 
-                synopsis = bind { key = 'fullPath', object = propertyTable },
-
-                f:row {
-                    f:static_text {
-                        title = LOC "$$$/DayOneExport/ExportDialog/FullPath=Make sure you have the Day One CLI installed.",
-                        alignment = 'right',
-                        width = share 'labelWidth',
-                        visible = bind 'hasNoError',
+                viewFactory:row {
+                    spacing = viewFactory:control_spacing(),
+                    viewFactory:checkbox {
+                        title = "Use picture's time",
+                        value = bind 'use_time'
                     },
-
                 },
 
+                viewFactory:row {
+                    spacing = viewFactory:control_spacing(),
+                    viewFactory:checkbox {
+                        title = "Use picture's location",
+                        value = bind 'use_location'
+                    },
+                },
+
+                viewFactory:row {
+                    spacing = viewFactory:control_spacing(),
+                    viewFactory:checkbox {
+                        title = "Use picture's keywords as tags",
+                        value = bind 'use_keywords'
+                    },
+                },
+
+                viewFactory:row {
+                    spacing = viewFactory:control_spacing(),
+                    viewFactory:checkbox {
+                        title = "Apply specific tags:",
+                        value = bind 'use_specific_tags'
+                    },
+                    viewFactory:edit_field {
+                        value = bind 'tags', -- bound to property
+                        immediate = true,
+                    },
+                },
             },
         }
-
-        return result
-
     end,
 
     processRenderedPhotos = function ( functionContext, exportContext )
