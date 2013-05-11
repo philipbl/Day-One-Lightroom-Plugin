@@ -1,5 +1,6 @@
-
 local random = math.random
+local LrPathUtils = import 'LrPathUtils'
+
 local function uuid()
     local template ='xxxxxxxxxxxx4xxxyxxxxxxxxxxxxxxx'
     return string.gsub(template, '[xy]', function (c)
@@ -23,8 +24,13 @@ local function split(str, delimiter)
   return result
 end
 
-local LrPathUtils = import 'LrPathUtils'
+local function valid_journal_path(path)
+    local LrFileUtils = import 'LrFileUtils'
 
+    return LrFileUtils.exists( path ) and
+           LrFileUtils.exists( LrPathUtils.child(path, 'entries')) and
+           LrFileUtils.exists( LrPathUtils.child(path, 'photos'))
+end
 
 return {
     hideSections = { 'exportLocation', 'fileNaming' },
@@ -185,6 +191,12 @@ return {
                                         and "Adding " .. nPhotos .. " photos to Day One"
                                         or "Adding one photo to Day One",
         }
+
+        -- Check if selected location exists
+        if not valid_journal_path( exportParams.path ) then
+            LrDialogs.showError( "Selected journal location \n(" .. exportParams.path .. ")\ndoes not exist. Please select a different location." )
+            return
+        end
 
         -- Iterate through photo renditions.
 
