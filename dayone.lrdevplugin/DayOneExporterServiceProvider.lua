@@ -166,9 +166,12 @@ return {
                         value = bind 'use_specific_tags'
                     },
                     viewFactory:edit_field {
-                        value = bind 'tags', -- bound to property
+                        value = bind 'tags',
                         enabled = bind 'use_specific_tags',
                         immediate = true,
+                    },
+                    viewFactory:static_text {
+                        title = "(comma separated)",
                     },
                 },
             },
