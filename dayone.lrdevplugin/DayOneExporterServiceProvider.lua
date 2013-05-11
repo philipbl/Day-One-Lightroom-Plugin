@@ -248,13 +248,13 @@ return {
                     f:write('   <array>\n')
                 end
 
-                if exportParams.use_keywords then
+                if exportParams.use_keywords and old_keywords[1] ~= '' then
                     for key,value in pairs(old_keywords) do
                         f:write('       <string>' .. value .. '</string>\n')
                     end
                 end
 
-                if exportParams.use_specific_tags then
+                if exportParams.use_specific_tags and new_keywords[1] ~= '' then
                     for key,value in pairs(new_keywords) do
                         f:write('       <string>' .. value .. '</string>\n')
                     end
