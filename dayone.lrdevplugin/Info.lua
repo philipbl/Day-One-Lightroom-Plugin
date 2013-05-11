@@ -8,7 +8,7 @@ return {
 
     LrExportServiceProvider = {
         title = "Day One",
-        file = 'DayOneExporterServiceProvider.lua',
+        file = 'ServiceProvider.lua',
     },
 
     VERSION = { major=0, minor=9, revision=0},
