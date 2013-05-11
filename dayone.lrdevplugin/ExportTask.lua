@@ -32,6 +32,15 @@ local function validJournalPath( path )
            LrFileUtils.exists( LrPathUtils.child(path, 'photos'))
 end
 
+local function getUniqueUUID( path )
+    local fileName = uuid()
+
+    while LrFileUtils.exists( LrPathUtils.child( path, fileName )) do
+        fileName = uuid()
+    end
+
+    return fileName
+end
 
 local function createEntry( exportParams, date, oldKeywords, newKeywords, uuid )
     local entries = LrPathUtils.child( exportParams.path, 'entries' )
@@ -124,8 +133,7 @@ function ExportTask.processRenderedPhotos( functionContext, exportContext )
             local oldKeywords = split( rendition.photo:getFormattedMetadata("keywordTags"), ',' )
             local newKeywords = split( exportParams.tags, ',' )
 
-            local uuid = uuid()
-            -- TODO: check to make sure file does not exist
+            local uuid = getUniqueUUID( exportParams.path )
 
             createPhoto( exportParams, pathOrMessage, uuid )
             createEntry( exportParams, date, oldKeywords, newKeywords, uuid )
