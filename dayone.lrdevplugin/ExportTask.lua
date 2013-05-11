@@ -26,13 +26,14 @@ local function split( str, delimiter )
     return result
 end
 
-local function valid_journal_path( path )
+local function validJournalPath( path )
     return LrFileUtils.exists( path ) and
            LrFileUtils.exists( LrPathUtils.child(path, 'entries')) and
            LrFileUtils.exists( LrPathUtils.child(path, 'photos'))
 end
 
-local function create_entry( exportParams, date, old_keywords, new_keywords, uuid )
+
+local function createEntry( exportParams, date, oldKeywords, newKeywords, uuid )
     local entries = LrPathUtils.child( exportParams.path, 'entries' )
 
     local f = io.open(LrPathUtils.child(LrPathUtils.standardizePath(entries), uuid .. '.doentry'),"w")
@@ -52,14 +53,14 @@ local function create_entry( exportParams, date, old_keywords, new_keywords, uui
         f:write('   <array>\n')
     end
 
-    if exportParams.use_keywords and old_keywords[1] ~= '' then
-        for key,value in pairs(old_keywords) do
+    if exportParams.use_keywords and oldKeywords[1] ~= '' then
+        for key,value in pairs(oldKeywords) do
             f:write('       <string>' .. value .. '</string>\n')
         end
     end
 
-    if exportParams.use_specific_tags and new_keywords[1] ~= '' then
-        for key,value in pairs(new_keywords) do
+    if exportParams.use_specific_tags and newKeywords[1] ~= '' then
+        for key,value in pairs(newKeywords) do
             f:write('       <string>' .. value .. '</string>\n')
         end
     end
@@ -76,7 +77,7 @@ local function create_entry( exportParams, date, old_keywords, new_keywords, uui
     f:close()
 end
 
-local function create_photo( exportParams, photoPath, uuid )
+local function createPhoto( exportParams, photoPath, uuid )
     local photos = LrPathUtils.child( exportParams.path, 'photos' )
     LrFileUtils.copy( photoPath, LrPathUtils.child(LrPathUtils.standardizePath(photos), uuid .. '.jpg') )
 end
@@ -97,7 +98,7 @@ function ExportTask.processRenderedPhotos( functionContext, exportContext )
     }
 
     -- Check if selected location exists
-    if not valid_journal_path( exportParams.path ) then
+    if not validJournalPath( exportParams.path ) then
         LrDialogs.showError( "Selected journal location \n(" .. exportParams.path .. ")\ndoes not exist. Please select a different location." )
         return
     end
@@ -120,14 +121,14 @@ function ExportTask.processRenderedPhotos( functionContext, exportContext )
                          and rendition.photo:getRawMetadata("dateTimeOriginal")
                          or LrDate.currentTime()
 
-            local old_keywords = split( rendition.photo:getFormattedMetadata("keywordTags"), ',' )
-            local new_keywords = split( exportParams.tags, ',' )
+            local oldKeywords = split( rendition.photo:getFormattedMetadata("keywordTags"), ',' )
+            local newKeywords = split( exportParams.tags, ',' )
 
             local uuid = uuid()
             -- TODO: check to make sure file does not exist
 
-            create_photo( exportParams, pathOrMessage, uuid )
-            create_entry( exportParams, date, old_keywords, new_keywords, uuid )
+            createPhoto( exportParams, pathOrMessage, uuid )
+            createEntry( exportParams, date, oldKeywords, newKeywords, uuid )
 
             -- clean up
             LrFileUtils.delete( pathOrMessage )
