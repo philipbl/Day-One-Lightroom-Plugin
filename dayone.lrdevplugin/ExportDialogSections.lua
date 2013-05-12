@@ -11,16 +11,17 @@ function ExportDialogSections.sectionsForTopOfDialog( viewFactory, propertyTable
     return {
         {
             title = "Journal Location",
+            synopsis = bind 'journal_type',
 
             viewFactory:row {
                 spacing = viewFactory:control_spacing(),
                 viewFactory:radio_button {
                     title = 'iCloud',
                     value = bind 'journal_type',
-                    checked_value = 'icloud',
+                    checked_value = 'iCloud',
                     action = function ()
                         propertyTable.custom = false
-                        propertyTable.journal_type = 'icloud'
+                        propertyTable.journal_type = 'iCloud'
                         propertyTable.path = propertyTable.icloud_path
                     end,
                 },
@@ -31,10 +32,10 @@ function ExportDialogSections.sectionsForTopOfDialog( viewFactory, propertyTable
                 viewFactory:radio_button {
                     title = 'Dropbox',
                     value = bind 'journal_type',
-                    checked_value = 'dropbox',
+                    checked_value = 'Dropbox',
                     action = function ()
                         propertyTable.custom = false
-                        propertyTable.journal_type = 'dropbox'
+                        propertyTable.journal_type = 'Dropbox'
                         propertyTable.path = propertyTable.dropbox_path
                     end,
                 },
@@ -45,10 +46,10 @@ function ExportDialogSections.sectionsForTopOfDialog( viewFactory, propertyTable
                 viewFactory:radio_button {
                     title = 'Custom',
                     value = bind 'journal_type',
-                    checked_value = 'custom',
+                    checked_value = 'Custom',
                     action = function ()
                         propertyTable.custom = true
-                        propertyTable.journal_type = 'custom'
+                        propertyTable.journal_type = 'Custom'
                         propertyTable.path = propertyTable.custom_path
                     end,
                 },
