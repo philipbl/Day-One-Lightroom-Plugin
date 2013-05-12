@@ -1,3 +1,7 @@
+-- Copyright (c) 2013, Philip Lundrigan
+-- All rights reserved.
+-- BSD License
+
 require "ExportDialogSections"
 require "ExportTask"
 

@@ -1,3 +1,7 @@
+-- Copyright (c) 2013, Philip Lundrigan
+-- All rights reserved.
+-- BSD License
+
 local random = math.random
 local LrPathUtils = import 'LrPathUtils'
 local LrFileUtils = import 'LrFileUtils'

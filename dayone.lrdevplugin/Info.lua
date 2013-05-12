@@ -1,3 +1,7 @@
+-- Copyright (c) 2013, Philip Lundrigan
+-- All rights reserved.
+-- BSD License
+
 return {
 
     LrSdkVersion = 3.0,
