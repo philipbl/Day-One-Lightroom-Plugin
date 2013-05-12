@@ -99,6 +99,14 @@ function ExportDialogSections.sectionsForTopOfDialog( viewFactory, propertyTable
             viewFactory:row {
                 spacing = viewFactory:control_spacing(),
                 viewFactory:checkbox {
+                    title = "Star entry",
+                    value = bind 'star'
+                },
+            },
+
+            viewFactory:row {
+                spacing = viewFactory:control_spacing(),
+                viewFactory:checkbox {
                     title = "Use picture's keywords as tags",
                     value = bind 'use_keywords'
                 },

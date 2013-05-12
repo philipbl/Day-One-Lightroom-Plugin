@@ -9,6 +9,7 @@ return {
 
     exportPresetFields = {
         { key = 'use_time', default = true },
+        { key = 'star', default = false },
         { key = 'use_keywords', default = false },
         { key = 'use_specific_tags', default = false },
         { key = 'tags', default = "" },

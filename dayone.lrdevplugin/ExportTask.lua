@@ -56,7 +56,12 @@ local function createEntry( exportParams, date, oldKeywords, newKeywords, uuid )
     f:write('    <key>Entry Text</key>\n')
     f:write('    <string></string>\n')
     f:write('    <key>Starred</key>\n')
-    f:write('    <false/>\n')
+
+    if exportParams.star then
+        f:write('    <true/>\n')
+    else
+        f:write('    <false/>\n')
+    end
 
     if exportParams.use_keywords or exportParams.use_specific_tags then
         f:write('   <key>Tags</key>\n')
