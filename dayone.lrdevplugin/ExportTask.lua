@@ -5,6 +5,7 @@ local LrDialogs = import 'LrDialogs'
 local LrDate = import 'LrDate'
 local LrStringUtils = import 'LrStringUtils'
 
+
 local function uuid()
     local template ='xxxxxxxxxxxx4xxxyxxxxxxxxxxxxxxx'
     return string.gsub(template, '[xy]', function (c)
@@ -91,8 +92,8 @@ local function createPhoto( exportParams, photoPath, uuid )
     LrFileUtils.copy( photoPath, LrPathUtils.child(LrPathUtils.standardizePath(photos), uuid .. '.jpg') )
 end
 
-ExportTask = {}
 
+ExportTask = {}
 
 function ExportTask.processRenderedPhotos( functionContext, exportContext )
 
@@ -106,16 +107,13 @@ function ExportTask.processRenderedPhotos( functionContext, exportContext )
                                     or "Adding one photo to Day One",
     }
 
-    -- Check if selected location exists
+    -- Check if selected journal location exists
     if not validJournalPath( exportParams.path ) then
         LrDialogs.showError( "Selected journal location \n(" .. exportParams.path .. ")\ndoes not exist. Please select a different location." )
         return
     end
 
-    -- Iterate through photo renditions.
-
-    local failures = {}
-
+     -- Iterate through photo renditions.
     for _, rendition in exportContext:renditions{ stopIfCanceled = true } do
 
         -- Wait for next photo to render.

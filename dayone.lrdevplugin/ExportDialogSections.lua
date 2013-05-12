@@ -1,7 +1,6 @@
 
 ExportDialogSections = {}
 
-
 function ExportDialogSections.sectionsForTopOfDialog( viewFactory, propertyTable )
     local LrDialogs = import "LrDialogs"
     local LrView = import "LrView"
@@ -12,7 +11,6 @@ function ExportDialogSections.sectionsForTopOfDialog( viewFactory, propertyTable
     return {
         {
             title = "Journal Location",
-            -- synopsis = ""
 
             viewFactory:row {
                 spacing = viewFactory:control_spacing(),
@@ -59,12 +57,6 @@ function ExportDialogSections.sectionsForTopOfDialog( viewFactory, propertyTable
                     title = "Browse",
                     enabled = bind 'custom',
                     action = function ()
-                        --local LrLogger = import 'LrLogger'
-                        --local logger = LrLogger( 'myPlugin' )
-                        --logger:enable("logfile")
-
-                        --logger:warn(propertyTable.journal_type)
-
                         local location = LrDialogs.runOpenPanel({
                             title = "Day One Journal Location",
                             canChooseDirectories = false,
