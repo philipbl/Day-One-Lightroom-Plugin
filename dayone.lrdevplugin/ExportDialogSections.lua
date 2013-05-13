@@ -63,7 +63,7 @@ function ExportDialogSections.sectionsForTopOfDialog( viewFactory, propertyTable
                     action = function ()
                         local location = LrDialogs.runOpenPanel({
                             title = "Day One Journal Location",
-                            canChooseDirectories = false,
+                            canChooseDirectories = true,
                             canChooseFiles = true,
                             allowsMultipleSelection = false,
                         })[1]
