@@ -4,7 +4,9 @@ This plug-in creates an export service for Lightroom that allows you to export p
 
 ## Install
 
-First, [download][1] the project and unzip it. Next, rename `dayone.lrdevplugin` to `dayone.lrplugin`. [explain why?]. There are two ways to add the plug-in to Lightroom. You can either put the plug-in anywhere on your hard drive and add it manually to Lightroom, or you can put it into Lightroom's plug-in directory and it will recognize it automatically.
+First, [download][1] the project and unzip it. Next, rename `dayone.lrdevplugin` to `dayone.lrplugin`. The `.lrdevplugin` is used for when a plug-in is being developed.
+
+There are two ways to add the plug-in to Lightroom. You can either put the plug-in anywhere on your hard drive and add it manually to Lightroom, or you can put it into Lightroom's plug-in directory and it will recognize it automatically.
 
 
 ### Manually
@@ -39,7 +41,7 @@ Note: If you follow the instructions to add the plug-in automatically, the remov
 
 ## Usage
 
-To use this plug-in, select the picture(s) that you want to export and press the `Export` button. In the export dialog box, change the `Export To:` drop down menu to `Day One`.
+To use this plug-in, select the picture(s) that you want to export and press the `Export` button in the Library module of Lightroom. In the export dialog box, change the `Export To:` drop down menu to `Day One`.
 
 ![](screenshots/export-1.png)
 
@@ -56,7 +58,7 @@ This option allows you to choose where your Day One journal is located. If you u
 
 **Apply specific tags**: This allows you to add specific tags to all entries that are exported. This might be useful if you want to keep track of the source of pictures in your Day One journal. Each tag must be comma separated for this to work.
 
-Warning: Pictures that are exported can be extremely large and take up a lot of space in iCloud or Dropbox. Use the normal `Image Sizing` options to scale down the picture.
+Warning: Pictures that are exported can be extremely large and take up a lot of space in iCloud or Dropbox. You can use the normal `Image Sizing` options to scale down the picture.
 
 
 
