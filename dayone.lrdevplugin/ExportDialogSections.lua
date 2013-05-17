@@ -103,6 +103,18 @@ function ExportDialogSections.sectionsForTopOfDialog( viewFactory, propertyTable
             viewFactory:row {
                 spacing = viewFactory:control_spacing(),
                 viewFactory:checkbox {
+                    title = "Use picture's location",
+                    value = bind 'use_location'
+                },
+                viewFactory:static_text {
+                    title = "(if GPS coordinates are present)",
+                    enabled = false,
+                },
+            },
+
+            viewFactory:row {
+                spacing = viewFactory:control_spacing(),
+                viewFactory:checkbox {
                     title = "Star entry",
                     value = bind 'star'
                 },
@@ -129,6 +141,7 @@ function ExportDialogSections.sectionsForTopOfDialog( viewFactory, propertyTable
                 },
                 viewFactory:static_text {
                     title = "(comma separated)",
+                    enabled = false,
                 },
             },
         },
