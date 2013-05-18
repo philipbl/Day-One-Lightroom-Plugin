@@ -47,8 +47,15 @@ local function getUniqueUUID( path )
     return fileName
 end
 
-local function createEntry( exportParams, date, oldKeywords, newKeywords, uuid )
+local function createEntry( exportParams, photo, uuid )
+    local date = exportParams.use_time
+                 and photo:getRawMetadata("dateTimeOriginal")
+                 or LrDate.currentTime()
+
     local entries = LrPathUtils.child( exportParams.path, 'entries' )
+
+    local oldKeywords = split( photo:getFormattedMetadata("keywordTags"), ',' )
+    local newKeywords = split( exportParams.tags, ',' )
 
     local f = io.open(LrPathUtils.child(LrPathUtils.standardizePath(entries), uuid .. '.doentry'),"w")
     f:write('<?xml version="1.0" encoding="UTF-8"?>\n')
@@ -60,6 +67,16 @@ local function createEntry( exportParams, date, oldKeywords, newKeywords, uuid )
     f:write('    <key>Entry Text</key>\n')
     f:write('    <string></string>\n')
     f:write('    <key>Starred</key>\n')
+
+    if exportParams.use_location then
+        f:write('    <key>Location</key>\n')
+        f:write('    <dict>\n')
+        f:write('        <key>Latitude</key>\n')
+        f:write('        <real>40.510755786435737</real>\n')
+        f:write('        <key>Longitude</key>\n')
+        f:write('        <real>-111.90233324107737</real>\n')
+        f:write('    </dict>')
+    end
 
     if exportParams.star then
         f:write('    <true/>\n')
@@ -131,19 +148,10 @@ function ExportTask.processRenderedPhotos( functionContext, exportContext )
         if progressScope:isCanceled() then break end
 
         if success then
-            local filename = LrPathUtils.leafName( pathOrMessage )
-
-            local date = exportParams.use_time
-                         and rendition.photo:getRawMetadata("dateTimeOriginal")
-                         or LrDate.currentTime()
-
-            local oldKeywords = split( rendition.photo:getFormattedMetadata("keywordTags"), ',' )
-            local newKeywords = split( exportParams.tags, ',' )
-
             local uuid = getUniqueUUID( exportParams.path )
 
             createPhoto( exportParams, pathOrMessage, uuid )
-            createEntry( exportParams, date, oldKeywords, newKeywords, uuid )
+            createEntry( exportParams, rendition.photo, uuid )
 
             -- clean up
             LrFileUtils.delete( pathOrMessage )
