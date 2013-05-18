@@ -57,6 +57,14 @@ local function createEntry( exportParams, photo, uuid )
     local oldKeywords = split( photo:getFormattedMetadata("keywordTags"), ',' )
     local newKeywords = split( exportParams.tags, ',' )
 
+
+    local gps = ""
+    if not photo:getRawMetadata("gps") then
+        exportParams.use_location = false
+    else
+        gps = photo:getRawMetadata("gps")
+    end
+
     local f = io.open(LrPathUtils.child(LrPathUtils.standardizePath(entries), uuid .. '.doentry'),"w")
     f:write('<?xml version="1.0" encoding="UTF-8"?>\n')
     f:write('<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">\n')
@@ -68,20 +76,20 @@ local function createEntry( exportParams, photo, uuid )
     f:write('    <string></string>\n')
     f:write('    <key>Starred</key>\n')
 
-    if exportParams.use_location then
-        f:write('    <key>Location</key>\n')
-        f:write('    <dict>\n')
-        f:write('        <key>Latitude</key>\n')
-        f:write('        <real>40.510755786435737</real>\n')
-        f:write('        <key>Longitude</key>\n')
-        f:write('        <real>-111.90233324107737</real>\n')
-        f:write('    </dict>')
-    end
-
     if exportParams.star then
         f:write('    <true/>\n')
     else
         f:write('    <false/>\n')
+    end
+
+    if exportParams.use_location then
+        f:write('    <key>Location</key>\n')
+        f:write('    <dict>\n')
+        f:write('        <key>Latitude</key>\n')
+        f:write('        <real>' .. gps.latitude .. '</real>\n')
+        f:write('        <key>Longitude</key>\n')
+        f:write('        <real>' .. gps.longitude .. '</real>\n')
+        f:write('    </dict>\n')
     end
 
     if exportParams.use_keywords or exportParams.use_specific_tags then
@@ -150,8 +158,8 @@ function ExportTask.processRenderedPhotos( functionContext, exportContext )
         if success then
             local uuid = getUniqueUUID( exportParams.path )
 
-            createPhoto( exportParams, pathOrMessage, uuid )
             createEntry( exportParams, rendition.photo, uuid )
+            createPhoto( exportParams, pathOrMessage, uuid )
 
             -- clean up
             LrFileUtils.delete( pathOrMessage )
