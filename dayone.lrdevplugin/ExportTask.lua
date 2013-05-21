@@ -9,7 +9,6 @@ local LrDialogs = import 'LrDialogs'
 local LrDate = import 'LrDate'
 local LrStringUtils = import 'LrStringUtils'
 
-
 local function uuid()
     local template ='xxxxxxxxxxxx4xxxyxxxxxxxxxxxxxxx'
     return string.gsub(template, '[xy]', function (c)
@@ -47,8 +46,68 @@ local function getUniqueUUID( path )
     return fileName
 end
 
-local function createEntry( exportParams, date, oldKeywords, newKeywords, uuid )
+local function getLocation( gps )
+    local LrXml = import "LrXml"
+    local LrHttp = import "LrHttp"
+
+    local lat = gps.latitude
+    local long = gps.longitude
+
+    local url = "http://maps.googleapis.com/maps/api/geocode/xml?latlng=" .. lat .. "," .. long .. "&sensor=true"
+    local xml = LrHttp.get( url )
+
+    root = LrXml.parseXml( xml )
+    status = root:childAtIndex( 1 ):text()
+
+    xsltString = ''
+    xsltString = xsltString .. '<?xml version="1.0" encoding="UTF-8"?>'
+    xsltString = xsltString .. '<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0">'
+    xsltString = xsltString .. '    <xsl:output method="text"/>'
+    xsltString = xsltString .. '    <xsl:template match="GeocodeResponse">'
+    xsltString = xsltString .. '        <xsl:apply-templates select="result"/>'
+    xsltString = xsltString .. '    </xsl:template>'
+    xsltString = xsltString .. '    <xsl:template match="result">'
+    xsltString = xsltString .. '        <xsl:apply-templates select="address_component"/>'
+    xsltString = xsltString .. '    </xsl:template>'
+    xsltString = xsltString .. '    <xsl:template match="address_component">'
+    xsltString = xsltString .. '        <xsl:value-of select="long_name" />,'
+    xsltString = xsltString .. '    </xsl:template>'
+    xsltString = xsltString .. '</xsl:stylesheet>'
+
+    -- TODO: check status to make sure it is "OK"
+
+    local location = split( root:transform( xsltString ), ',' )
+
+    local results = {}
+    results.placeName = location[1]
+    results.locality = location[2]
+    results.adminArea = location[4]
+    results.country = location[5]
+    results.latitude = lat
+    results.longitude = long
+
+    return results
+end
+
+local function createEntry( exportParams, photo, uuid )
+    local date = exportParams.use_time
+                 and photo:getRawMetadata("dateTimeOriginal")
+                 or LrDate.currentTime()
+
     local entries = LrPathUtils.child( exportParams.path, 'entries' )
+
+    local oldKeywords = split( photo:getFormattedMetadata("keywordTags"), ',' )
+    local newKeywords = split( exportParams.tags, ',' )
+
+
+    local location = ""
+    if exportParams.use_location then
+        if not photo:getRawMetadata("gps") then
+            exportParams.use_location = false
+        else
+            location = getLocation( photo:getRawMetadata("gps") )
+        end
+    end
 
     local f = io.open(LrPathUtils.child(LrPathUtils.standardizePath(entries), uuid .. '.doentry'),"w")
     f:write('<?xml version="1.0" encoding="UTF-8"?>\n')
@@ -65,6 +124,24 @@ local function createEntry( exportParams, date, oldKeywords, newKeywords, uuid )
         f:write('    <true/>\n')
     else
         f:write('    <false/>\n')
+    end
+
+    if exportParams.use_location then
+        f:write('    <key>Location</key>\n')
+        f:write('    <dict>\n')
+        f:write('        <key>Administrative Area</key>\n')
+        f:write('        <string>' .. location.adminArea .. '</string>\n')
+        f:write('        <key>Country</key>\n')
+        f:write('        <string>' .. location.country .. '</string>\n')
+        f:write('        <key>Latitude</key>\n')
+        f:write('        <real>' .. location.latitude .. '</real>\n')
+        f:write('        <key>Locality</key>\n')
+        f:write('        <string>' .. location.locality .. '</string>\n')
+        f:write('        <key>Longitude</key>\n')
+        f:write('        <real>' .. location.longitude .. '</real>\n')
+        f:write('        <key>Place Name</key>\n')
+        f:write('        <string>' .. location.placeName .. '</string>\n')
+        f:write('    </dict>\n')
     end
 
     if exportParams.use_keywords or exportParams.use_specific_tags then
@@ -131,19 +208,10 @@ function ExportTask.processRenderedPhotos( functionContext, exportContext )
         if progressScope:isCanceled() then break end
 
         if success then
-            local filename = LrPathUtils.leafName( pathOrMessage )
-
-            local date = exportParams.use_time
-                         and rendition.photo:getRawMetadata("dateTimeOriginal")
-                         or LrDate.currentTime()
-
-            local oldKeywords = split( rendition.photo:getFormattedMetadata("keywordTags"), ',' )
-            local newKeywords = split( exportParams.tags, ',' )
-
             local uuid = getUniqueUUID( exportParams.path )
 
+            createEntry( exportParams, rendition.photo, uuid )
             createPhoto( exportParams, pathOrMessage, uuid )
-            createEntry( exportParams, date, oldKeywords, newKeywords, uuid )
 
             -- clean up
             LrFileUtils.delete( pathOrMessage )
