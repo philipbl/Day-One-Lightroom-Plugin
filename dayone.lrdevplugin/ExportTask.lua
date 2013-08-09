@@ -89,6 +89,17 @@ local function getLocation( gps )
     return results
 end
 
+local function formatTime( time )
+    tz, ds = LrDate.timeZone()
+    if ds then
+        time = time - tz - 3600
+    else
+        time = time - tz
+    end
+
+    return LrDate.timeToUserFormat( time, "%Y-%m-%dT%H:%M:%SZ" )
+end
+
 local function generateEntry(date, starred, location, tags, uuid)
 
     local entryString = [[
@@ -97,7 +108,7 @@ local function generateEntry(date, starred, location, tags, uuid)
 <plist version="1.0">
 <dict>
     <key>Creation Date</key>
-    <date>%sZ</date>
+    <date>%s</date>
     <key>Entry Text</key>
     <string></string>%s
     <key>Starred</key>
@@ -159,7 +170,7 @@ local function generateEntry(date, starred, location, tags, uuid)
     tagString = string.format( tagString, tag )
 
     entryString = string.format( entryString,
-                                 LrDate.timeToW3CDate(date),
+                                 formatTime( date ),
                                  locationString,
                                  starred,
                                  tagString,
