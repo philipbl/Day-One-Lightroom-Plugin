@@ -74,8 +74,6 @@ local function getLocation( gps )
     </xsl:stylesheet>
     ]]
 
-    -- TODO: check status to make sure it is "OK"
-
     local location = split( root:transform( xsltString ), ',' )
 
     local results = {}
@@ -199,8 +197,17 @@ local function createEntry( exportParams, photo, uuid )
 
     -- join two lists together
     local tags = {}
-    for _, l in ipairs(oldKeywords) do tags[l] = true end
-    for _, l in ipairs(newKeywords) do tags[l] = true end
+    for _, l in ipairs(oldKeywords) do
+        if l ~= "" then
+            tags[l] = true
+        end
+    end
+
+    for _, l in ipairs(newKeywords) do
+        if l ~= "" then
+            tags[l] = true
+        end
+    end
 
     -- get location
     local location = nil
