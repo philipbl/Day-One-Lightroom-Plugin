@@ -32,9 +32,19 @@ local function split( str, delimiter )
 end
 
 local function validJournalPath( path )
-    return LrFileUtils.exists( path ) and
-           LrFileUtils.exists( LrPathUtils.child(path, 'entries')) and
-           LrFileUtils.exists( LrPathUtils.child(path, 'photos'))
+    if not LrFileUtils.exists( path ) then
+        return false, "Journal directory does not exist."
+    elseif not LrFileUtils.exists( LrPathUtils.child(path, 'entries') ) then
+        -- This directory should really be in here, if it is a valid journal
+        -- Let's just error out and make the user pick a different directory
+        return false, "\"entries\" directory does not exist."
+    elseif not LrFileUtils.exists( LrPathUtils.child(path, 'photos') ) then
+        -- When the user has not added a photo yet, the "photos" directory does not exist
+        -- Let's just create it for them.
+        LrFileUtils.createDirectory( LrPathUtils.child(path, 'photos') )
+    end
+
+    return true, ""
 end
 
 local function getUniqueUUID( path )
@@ -244,8 +254,9 @@ function ExportTask.processRenderedPhotos( functionContext, exportContext )
     }
 
     -- Check if selected journal location exists
-    if not validJournalPath( exportParams.path ) then
-        LrDialogs.showError( "Selected journal location \n(" .. exportParams.path .. ")\ndoes not exist. Please select a different location." )
+    valid, errorMessage = validJournalPath( exportParams.path )
+    if not valid then
+        LrDialogs.showError( "Something is wrong with the journal location \n(" .. exportParams.path .. ")\n you selected. " .. errorMessage)
         return
     end
 
