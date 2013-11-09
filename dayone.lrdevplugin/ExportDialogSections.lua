@@ -4,12 +4,23 @@
 
 ExportDialogSections = {}
 
+LrPathUtils = import 'LrPathUtils'
+icloudPath = LrPathUtils.standardizePath('~/Library/Mobile Documents/5U8NS4GX82~com~dayoneapp~dayone/Documents/Journal_dayone')
+dropboxPath = LrPathUtils.getStandardFilePath('home') .. LrPathUtils.standardizePath('/Dropbox/Apps/Day One/Journal.dayone')
+
+
 function ExportDialogSections.sectionsForTopOfDialog( viewFactory, propertyTable )
     local LrDialogs = import "LrDialogs"
     local LrView = import "LrView"
+    local LrPathUtils = import 'LrPathUtils'
+    local LrFileUtils = import 'LrFileUtils'
 
     local bind = LrView.bind
     local share = LrView.share
+
+    local function iCloudExists()
+        return LrFileUtils.exists( icloudPath )
+    end
 
     return {
         {
@@ -22,10 +33,11 @@ function ExportDialogSections.sectionsForTopOfDialog( viewFactory, propertyTable
                     title = 'iCloud',
                     value = bind 'journal_type',
                     checked_value = 'iCloud',
+                    enabled = iCloudExists(),
                     action = function ()
                         propertyTable.custom = false
                         propertyTable.journal_type = 'iCloud'
-                        propertyTable.path = propertyTable.icloud_path
+                        propertyTable.path = icloudPath
                     end,
                 },
             },
@@ -39,7 +51,7 @@ function ExportDialogSections.sectionsForTopOfDialog( viewFactory, propertyTable
                     action = function ()
                         propertyTable.custom = false
                         propertyTable.journal_type = 'Dropbox'
-                        propertyTable.path = propertyTable.dropbox_path
+                        propertyTable.path = dropboxPath
                     end,
                 },
             },
@@ -64,7 +76,6 @@ function ExportDialogSections.sectionsForTopOfDialog( viewFactory, propertyTable
                         local location = LrDialogs.runOpenPanel({
                             title = "Day One Journal Location",
                             canChooseDirectories = true,
-                            canChooseFiles = true,
                             allowsMultipleSelection = false,
                         })[1]
 
