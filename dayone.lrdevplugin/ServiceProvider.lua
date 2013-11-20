@@ -18,6 +18,8 @@ return {
         { key = 'use_keywords', default = false },
         { key = 'use_specific_tags', default = false },
         { key = 'tags', default = "" },
+        { key = 'use_activity', default = false },
+        { key = 'activity', default = "" },
         { key = 'journal_type', default = 'Dropbox' },
         { key = 'custom', default = false },
         { key = 'custom_path', default = '' },

@@ -108,13 +108,13 @@ local function formatTime( time )
     return LrDate.timeToUserFormat( time, "%Y-%m-%dT%H:%M:%SZ" )
 end
 
-local function generateEntry(date, starred, location, tags, uuid)
+local function generateEntry(date, starred, location, tags, uuid, activity)
 
     local entryString = [[
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
-<dict>
+<dict>%s
     <key>Creation Date</key>
     <date>%s</date>
     <key>Entry Text</key>
@@ -126,6 +126,17 @@ local function generateEntry(date, starred, location, tags, uuid)
 </dict>
 </plist>
     ]]
+
+    -- take care of activity if necessary
+    local activityString = ''
+    if activity ~= nil then
+        activityString = [[
+
+    <key>Activity</key>
+    <string>%s</string>]]
+
+        activityString = string.format( activityString, activity)
+    end
 
     -- take care of location if necessary
     local locationString = ''
@@ -178,6 +189,7 @@ local function generateEntry(date, starred, location, tags, uuid)
     tagString = string.format( tagString, tag )
 
     entryString = string.format( entryString,
+                                 activityString,
                                  formatTime( date ),
                                  locationString,
                                  starred,
@@ -205,6 +217,10 @@ local function createEntry( exportParams, photo, uuid )
                         split( exportParams.tags, ',' ) or
                         {}
 
+    local activity = exportParams.use_activity and
+                     exportParams.activity or
+                     nil
+
     -- join two lists together
     local tags = {}
     for _, l in ipairs(oldKeywords) do
@@ -227,7 +243,7 @@ local function createEntry( exportParams, photo, uuid )
 
     -- write entry
     local f = io.open( path, "w" )
-    f:write( generateEntry( date, exportParams.star, location, tags, uuid ))
+    f:write( generateEntry( date, exportParams.star, location, tags, uuid, activity ))
     f:close()
 
 end

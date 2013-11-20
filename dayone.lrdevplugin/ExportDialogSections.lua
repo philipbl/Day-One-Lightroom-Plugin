@@ -7,7 +7,7 @@ ExportDialogSections = {}
 LrPathUtils = import 'LrPathUtils'
 icloudPath = LrPathUtils.standardizePath('~/Library/Mobile Documents/5U8NS4GX82~com~dayoneapp~dayone/Documents/Journal_dayone')
 dropboxPath = LrPathUtils.getStandardFilePath('home') .. LrPathUtils.standardizePath('/Dropbox/Apps/Day One/Journal.dayone')
-
+activityList = {'Stationary', 'Walking', 'Running', 'Biking', 'Eating', 'Automotive', 'Flying'}
 
 function ExportDialogSections.sectionsForTopOfDialog( viewFactory, propertyTable )
     local LrDialogs = import "LrDialogs"
@@ -153,6 +153,29 @@ function ExportDialogSections.sectionsForTopOfDialog( viewFactory, propertyTable
                 viewFactory:static_text {
                     title = "(comma separated)",
                     enabled = false,
+                },
+            },
+
+            viewFactory:row {
+                spacing = viewFactory:control_spacing(),
+                viewFactory:checkbox {
+                    title = "Apply motion activity:",
+                    value = bind 'use_activity'
+                },
+                viewFactory:combo_box {
+                    value = bind 'activity',
+                    items = activityList,
+                    auto_completion = true,
+                    enabled = bind 'use_activity',
+                    immediate = false,
+                    validate = function( view, value )
+                        for _, v in pairs( activityList ) do
+                            if v == value then
+                                return true, value, ""
+                            end
+                        end
+                        return false, value, "Must be valid activity:\nStationary, Walking, Running, Biking, Eating, Automotive, Flying"
+                    end
                 },
             },
         },
