@@ -2,6 +2,8 @@
 
 This plug-in creates an export service for Lightroom that allows you to export pictures directly to Day One.
 
+**Disclaimer**: The software is supplied "as is" and all use is at your own risk. Make sure to back up your journal entries!
+
 ## Install
 
 First, [download][1] the project and unzip it. Next, rename `dayone.lrdevplugin` to `dayone.lrplugin`. The `.lrdevplugin` is used for when a plug-in is being developed.
@@ -60,6 +62,8 @@ This option allows you to choose where your Day One journal is located. If you u
 
 Warning: Pictures that are exported can be extremely large and take up a lot of space in iCloud or Dropbox. You can use the normal `Image Sizing` options to scale down the picture.
 
+### Acknowledgment
+Thanks to [tcjennings](https://github.com/tcjennings/LUA-RFC-4122-UUID-Generator) for the UUID4 generator.
 
 
 [1]: https://github.com/philipbl/Day-One-Lightroom-Plugin/archive/master.zip
