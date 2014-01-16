@@ -2,6 +2,8 @@
 
 This plug-in creates an export service for Lightroom that allows you to export pictures directly to Day One.
 
+**Disclaimer**: The software is supplied "as is" and all use is at your own risk. Make sure to back up your journal entries!
+
 ## Install
 
 First, [download][1] the project and unzip it. Next, rename `dayone.lrdevplugin` to `dayone.lrplugin`. The `.lrdevplugin` is used for when a plug-in is being developed.

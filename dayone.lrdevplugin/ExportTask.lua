@@ -50,7 +50,9 @@ end
 local function getUniqueUUID( path )
     local fileName = uuid()
 
-    while LrFileUtils.exists( LrPathUtils.child( path, fileName )) do
+    while LrFileUtils.exists(
+        LrPathUtils.child(
+            LrPathUtils.child( path, 'entries' ), fileName ) .. '.doentry' ) do
         fileName = uuid()
     end
 
