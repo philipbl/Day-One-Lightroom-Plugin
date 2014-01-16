@@ -9,12 +9,12 @@ local LrDialogs = import 'LrDialogs'
 local LrDate = import 'LrDate'
 local LrStringUtils = import 'LrStringUtils'
 local LrXml = import 'LrXml'
+local uuid4= (loadfile(LrPathUtils.child(_PLUGIN.path, "uuid4.lua")))()
 
 local function uuid()
-    local template ='xxxxxxxxxxxx4xxxyxxxxxxxxxxxxxxx'
-    return string.gsub(template, '[xy]', function (c)
-        local v = (c == 'x') and random(0, 0xf) or random(8, 0xb)
-        return LrStringUtils.upper(string.format('%x', v))
+    local uuid = uuid4.getUUID()
+    return string.gsub( uuid, '-', function (c)
+        return ''
     end)
 end
 

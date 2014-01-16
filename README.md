@@ -62,6 +62,8 @@ This option allows you to choose where your Day One journal is located. If you u
 
 Warning: Pictures that are exported can be extremely large and take up a lot of space in iCloud or Dropbox. You can use the normal `Image Sizing` options to scale down the picture.
 
+### Acknowledgment
+Thanks to [tcjennings](https://github.com/tcjennings/LUA-RFC-4122-UUID-Generator) for the UUID4 generator.
 
 
 [1]: https://github.com/philipbl/Day-One-Lightroom-Plugin/archive/master.zip
