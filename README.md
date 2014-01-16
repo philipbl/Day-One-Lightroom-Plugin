@@ -1,3 +1,6 @@
+### Update (January 16, 2014)
+**Current plug-in users**: Make sure to update the most recent version of the plug-in. I fixed a potentially nasty bug.
+
 # Day One Lightroom Plug-in
 
 This plug-in creates an export service for Lightroom that allows you to export pictures directly to Day One.
