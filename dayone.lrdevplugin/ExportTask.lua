@@ -132,6 +132,57 @@ local function getWeather( api_key, gps, time )
     -- return url
 end
 
+local weatherToIcon = {
+    ["clear-day"] = "clear",
+    ["clear-night"] = "clearn",
+    ["rain-day"] = "rain",
+    ["rain-night"] = "rainn",
+    ["snow"] = "",
+    ["sleet"] = "",
+    ["wind"] = "",
+    ["fog"] = "fog",
+    ["cloudy"] = "",
+    ["partly-cloudy-day"] = "pcloudy",
+    ["partly-cloudy-night"] = "pcloudyn"
+}
+
+local function getIconName(weather)
+    if weatherToIcon[weather] then
+        weather = weatherToIcon[weather]
+    end
+
+    -- clear.png
+    -- clearn.png
+    -- cloudy.png
+    -- cloudyn.png
+    -- fair.png
+    -- fog.png
+    -- fogn.png
+    -- freezingrain.png
+    -- hazy.png
+    -- hazyn.png
+    -- mcloudy.png
+    -- mcloudyn.png
+    -- mcloudys.png
+    -- mcloudysn.png
+    -- pcloudy.png
+    -- pcloudyn.png
+    -- pcloudys.png
+    -- pcloudysn.png
+    -- rain.png
+    -- rainn.png
+    -- snow.png
+    -- snown.png
+    -- snowwn.png
+    -- sunny.png
+    -- sunnyn.png
+    -- tstorm.png
+    -- tstormn.png
+    -- wintrymix.png
+
+    return weather .. ".png"
+end
+
 local function generateEntry(date, starred, location, weather, tags, uuid, activity)
 
     local entryString = [[
@@ -235,7 +286,7 @@ local function generateEntry(date, starred, location, weather, tags, uuid, activ
                                        weather.temperature,
                                        weather.summary,
                                        (weather.temperature * 9/5) + 32,
-                                       weather.icon .. '.png',
+                                       getIconName( weather.icon ),
                                        weather.pressure,
                                        weather.humidity * 100,
                                        'Forecast.io',
