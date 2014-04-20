@@ -126,6 +126,32 @@ function ExportDialogSections.sectionsForTopOfDialog( viewFactory, propertyTable
             viewFactory:row {
                 spacing = viewFactory:control_spacing(),
                 viewFactory:checkbox {
+                    title = "Add weather to entry",
+                    value = bind 'use_weather'
+                },
+                viewFactory:static_text {
+                    title = "(if GPS coordinates are present -- learn more at developer.forecast.io)",
+                    enabled = false,
+                },
+            },
+
+            viewFactory:row {
+                spacing = viewFactory:control_spacing(),
+                viewFactory:static_text {
+                    title = "     API Key for forcast.io:",
+                    enabled = bind 'use_weather',
+                },
+                viewFactory:edit_field {
+                    value = bind 'forcast_api_key',
+                    enabled = bind 'use_weather',
+                    immediate = true,
+                    width_in_chars = 25,
+                },
+            },
+
+            viewFactory:row {
+                spacing = viewFactory:control_spacing(),
+                viewFactory:checkbox {
                     title = "Star entry",
                     value = bind 'star'
                 },

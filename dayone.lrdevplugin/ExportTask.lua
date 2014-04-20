@@ -10,6 +10,8 @@ local LrDate = import 'LrDate'
 local LrStringUtils = import 'LrStringUtils'
 local LrXml = import 'LrXml'
 local uuid4= (loadfile(LrPathUtils.child(_PLUGIN.path, "uuid4.lua")))()
+JSON = (loadfile(LrPathUtils.child(_PLUGIN.path, "JSON.lua")))()
+
 
 local function uuid()
     local uuid = uuid4.getUUID()
@@ -110,7 +112,27 @@ local function formatTime( time )
     return LrDate.timeToUserFormat( time, "%Y-%m-%dT%H:%M:%SZ" )
 end
 
-local function generateEntry(date, starred, location, tags, uuid, activity)
+local function getWeather( api_key, gps, time )
+    local LrHttp = import "LrHttp"
+
+    time = formatTime( time )
+
+    local lat = gps.latitude
+    local long = gps.longitude
+
+    local url = "https://api.forecast.io/forecast/%s/%f,%f,%s?exclude=minutely,hourly,daily,flags,alerts&units=si"
+    url = string.format( url, api_key, lat, long, time )
+
+    -- What happens if they aren't connected to the Internet?
+    local json = LrHttp.get( url )
+    local weather = JSON:decode( json ).currently
+
+    return weather
+    -- return json
+    -- return url
+end
+
+local function generateEntry(date, starred, location, weather, tags, uuid, activity)
 
     local entryString = [[
 <?xml version="1.0" encoding="UTF-8"?>
@@ -124,7 +146,7 @@ local function generateEntry(date, starred, location, tags, uuid, activity)
     <key>Starred</key>
     <%s/>%s
     <key>UUID</key>
-    <string>%s</string>
+    <string>%s</string>%s
 </dict>
 </plist>
     ]]
@@ -170,6 +192,58 @@ local function generateEntry(date, starred, location, tags, uuid, activity)
                                         location.placeName )
     end
 
+    local weatherString = ''
+    if weather ~= nil then
+        -- Celsius -> temperature
+        -- Description -> summary
+        -- Fahrenheit
+        -- IconName -> icon
+        -- Pressure MB -> pressure
+        -- Relative Humidity -> humidity * 100
+        -- Service -> Forecast.io
+        -- Visibility KM -> visibility
+        -- Wind Bearing -> windBearing
+        -- Wind Speed KPH -> windSpeed * 3.6
+
+        weatherString = [[
+
+    <key>Weather</key>
+    <dict>
+        <key>Celsius</key>
+        <string>%d</string>
+        <key>Description</key>
+        <string>%s</string>
+        <key>Fahrenheit</key>
+        <string>%d</string>
+        <key>IconName</key>
+        <string>%s</string>
+        <key>Pressure MB</key>
+        <real>%f</real>
+        <key>Relative Humidity</key>
+        <real>%d</real>
+        <key>Service</key>
+        <string>%s</string>
+        <key>Visibility KM</key>
+        <real>%f</real>
+        <key>Wind Bearing</key>
+        <integer>%d</integer>
+        <key>Wind Speed KPH</key>
+        <real>%f</real>
+    </dict>]]
+
+        weatherString = string.format( weatherString,
+                                       weather.temperature,
+                                       weather.summary,
+                                       (weather.temperature * 9/5) + 32,
+                                       weather.icon .. '.png',
+                                       weather.pressure,
+                                       weather.humidity * 100,
+                                       'Forecast.io',
+                                       weather.visibility,
+                                       weather.windBearing,
+                                       weather.windSpeed * 3.6 )
+    end
+
     -- take care of tags if necessary
     tag = ''
     if next(tags) ~= nil  then
@@ -196,7 +270,8 @@ local function generateEntry(date, starred, location, tags, uuid, activity)
                                  locationString,
                                  starred,
                                  tagString,
-                                 uuid )
+                                 uuid,
+                                 weatherString )
 
     return entryString
 end
@@ -243,9 +318,16 @@ local function createEntry( exportParams, photo, uuid )
         location = getLocation( photo:getRawMetadata("gps") )
     end
 
+    -- get weather
+    local weather = nil
+    if exportParams.use_weather and photo:getRawMetadata("gps") and exportParams.forcast_api_key then
+        -- TODO: Which date should I use?
+        weather = getWeather( exportParams.forcast_api_key, photo:getRawMetadata("gps"), date )
+    end
+
     -- write entry
     local f = io.open( path, "w" )
-    f:write( generateEntry( date, exportParams.star, location, tags, uuid, activity ))
+    f:write( generateEntry( date, exportParams.star, location, weather, tags, uuid, activity ))
     f:close()
 
 end

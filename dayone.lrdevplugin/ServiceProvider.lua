@@ -14,6 +14,8 @@ return {
     exportPresetFields = {
         { key = 'use_time', default = true },
         { key = 'use_location', default = true },
+        { key = 'use_weather', default = true },
+        { key = 'forcast_api_key', default = '' },
         { key = 'star', default = false },
         { key = 'use_keywords', default = false },
         { key = 'use_specific_tags', default = false },
