@@ -1,11 +1,12 @@
-### Update (January 16, 2014)
-**Current plug-in users**: Make sure to update the most recent version of the plug-in. I fixed a potentially nasty bug.
-
 # Day One Lightroom Plug-in
 
-This plug-in creates an export service for Lightroom that allows you to export pictures directly to Day One.
+This plug-in creates an export service for Lightroom that allows you to export pictures directly to Day One or Day One 2.
 
 **Disclaimer**: The software is supplied "as is" and all use is at your own risk. Make sure to back up your journal entries!
+
+## Day One 2
+
+The plug-in has been updated to support [Day One 2](http://dayoneapp.com/2016/01/introducing-day-one-2/). To export pictures to Day One 2, select it as your "Journal Location". There is currently no supported way of adding multiple pictures to an entry except through the apps. When this changes, I will update the plug-in to support multiple photos in one entry.
 
 ## Install
 
@@ -51,7 +52,7 @@ To use this plug-in, select the picture(s) that you want to export and press the
 ![](screenshots/export-1.png)
 
 ### Journal Location Options
-This option allows you to choose where your Day One journal is located. If you use iCloud or the default Dropbox location, then you can use one of the first two options. If you have your Day One journal in a special location, then you can select the last option, and specify where the journal is located.
+This option allows you to choose where your Day One journal is located. If you have your Day One journal in a special location, then you can select the last option, and specify where the journal is located. The Dropbox option assumes that you are using the default Dropbox location.
 
 ### Entry Settings
 
@@ -65,7 +66,7 @@ This option allows you to choose where your Day One journal is located. If you u
 
 Warning: Pictures that are exported can be extremely large and take up a lot of space in iCloud or Dropbox. You can use the normal `Image Sizing` options to scale down the picture.
 
-### Acknowledgment
+## Acknowledgment
 Thanks to [tcjennings](https://github.com/tcjennings/LUA-RFC-4122-UUID-Generator) for the UUID4 generator.
 
 
