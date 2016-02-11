@@ -5,6 +5,7 @@
 ExportDialogSections = {}
 
 LrPathUtils = import 'LrPathUtils'
+dayOne2Path = LrPathUtils.standardizePath('~/Library/Group Containers/5U8NS4GX82.dayoneapp2/Data/Auto Import/Default Journal.dayone')
 icloudPath = LrPathUtils.standardizePath('~/Library/Mobile Documents/5U8NS4GX82~com~dayoneapp~dayone/Documents/Journal_dayone')
 dropboxPath = LrPathUtils.getStandardFilePath('home') .. LrPathUtils.standardizePath('/Dropbox/Apps/Day One/Journal.dayone')
 activityList = {'Stationary', 'Walking', 'Running', 'Biking', 'Eating', 'Automotive', 'Flying'}
@@ -26,6 +27,21 @@ function ExportDialogSections.sectionsForTopOfDialog( viewFactory, propertyTable
         {
             title = "Journal Location",
             synopsis = bind 'journal_type',
+
+            viewFactory:row {
+                spacing = viewFactory:control_spacing(),
+                viewFactory:radio_button {
+                    title = 'Day One 2',
+                    value = bind 'journal_type',
+                    checked_value = 'Day One 2',
+                    enabled = iCloudExists(),
+                    action = function ()
+                        propertyTable.custom = false
+                        propertyTable.journal_type = 'Day One 2'
+                        propertyTable.path = dayOne2Path
+                    end,
+                },
+            },
 
             viewFactory:row {
                 spacing = viewFactory:control_spacing(),
