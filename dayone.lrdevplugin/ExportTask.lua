@@ -107,7 +107,9 @@ local function formatTime( time )
         time = time - tz
     end
 
-    return LrDate.timeToUserFormat( time, "%Y-%m-%dT%H:%M:%SZ" )
+    local date = LrDate.timeToUserFormat( time, "%Y-%m-%d" )
+    local time = LrDate.timeToUserFormat( time, "%H:%M:%S" )
+    return date .. 'T' .. time .. 'Z'
 end
 
 local function generateEntry(date, starred, location, tags, uuid, activity)
