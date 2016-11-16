@@ -7,6 +7,11 @@ local LrFileUtils = import 'LrFileUtils'
 local LrDialogs = import 'LrDialogs'
 local LrDate = import 'LrDate'
 local LrStringUtils = import 'LrStringUtils'
+local LrLogger = import 'LrLogger'
+
+local logger = LrLogger( 'libraryLogger' )
+logger:enable( "logfile" )
+
 
 
 local function split( str, delimiter )
@@ -82,8 +87,11 @@ end
 
 ExportTask = {}
 
-function ExportTask.processRenderedPhotos( functionContext, exportContext )
+function ExportTask.outputToLog( message )
+    logger:trace( message )
+end
 
+function ExportTask.processRenderedPhotos( functionContext, exportContext )
     local exportSession = exportContext.exportSession
     local exportParams = exportContext.propertyTable
 
@@ -94,6 +102,8 @@ function ExportTask.processRenderedPhotos( functionContext, exportContext )
                                     "Adding one photo to Day One",
     }
 
+    ExportTask.outputToLog("Starting to export")
+    ExportTask.outputToLog("Exporting " .. nPhotos .. " photos")
 
     --  -- Iterate through photo renditions
     -- for _, rendition in exportContext:renditions{ stopIfCanceled = true } do
