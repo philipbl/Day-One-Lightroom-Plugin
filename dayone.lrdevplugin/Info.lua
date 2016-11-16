@@ -11,10 +11,9 @@ return {
     LrPluginInfoUrl = 'https://github.com/philipbl/Day-One-Lightroom-Plugin',
 
     LrExportServiceProvider = {
-        title = "Day One",
+        title = "Day One 2",
         file = 'ServiceProvider.lua',
     },
 
-    VERSION = { major=1, minor=2, revision=1},
-
+    VERSION = { major=2, minor=0, revision=0 },
 }
